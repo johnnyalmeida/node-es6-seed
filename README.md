@@ -47,6 +47,12 @@ $ pm2 logs api (display only api app logs)
 $ pm2 logs big-api --lines 1000 (display X lines of api log file)
 ```
 
+Logs
+
+```sh
+$ cd $HOME/.pm2/logs
+```
+
 ### ESLint
 
 ```sh
