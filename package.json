@@ -1,0 +1,35 @@
+{
+  "name": "nodejs-seed-project",
+  "version": "1.0.0",
+  "description": "Seed project created to serve as a starting point for new projects, suggesting some patterns, dependencies/pacakges and style guide.",
+  "main": "index.js",
+  "scripts": {
+    "start": "pm2 start index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/4alltecnologia/node-es6-seed"
+  },
+  "keywords": [
+    "seed",
+    "project",
+    "4all",
+    "node"
+  ],
+  "author": "Ulysses Marins",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "dotenv": "^2.0.0",
+    "express": "^4.14.0",
+    "helmet": "^3.3.0",
+    "winston": "^2.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb-base": "^11.0.0",
+    "eslint-plugin-import": "^2.2.0"
+  }
+}
