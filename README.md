@@ -1,7 +1,7 @@
-# node-es6-seed
+# node-es6-seed [![Build Status](https://travis-ci.org/4alltecnologia/node-es6-seed.svg?branch=master)](https://travis-ci.org/4alltecnologia/node-es6-seed) [![Coverage Status](https://coveralls.io/repos/github/4alltecnologia/node-es6-seed/badge.svg?branch=master)](https://coveralls.io/github/4alltecnologia/node-es6-seed?branch=master)
+
 Seed project created to serve as a starting point for new projects, suggesting some patterns, dependencies/pacakges and style guide.
 
-[![Build Status](https://travis-ci.org/4alltecnologia/node-es6-seed.svg?branch=master)](https://travis-ci.org/4alltecnologia/node-es6-seed)
 
 ### Stack
 
