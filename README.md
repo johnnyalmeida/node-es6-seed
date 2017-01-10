@@ -19,9 +19,17 @@ Seed project created to serve as a starting point for new projects, suggesting s
 ### Installing and running the app with PM2
 
 ```sh
-$ sudo npm install
-$ sudo npm install -g pm2
+$ npm install
+$ npm install -g pm2
 $ npm start
+```
+
+### Running in dev with nodemon
+
+```sh
+$ npm install
+$ npm install -g nodemon
+$ npm run dev
 ```
 
 ### PM2
@@ -57,7 +65,7 @@ $ cd $HOME/.pm2/logs
 
 ```sh
 $ npm install eslint --save-dev
-$ ./node_modules/.bin/eslint yourfile.js
+$ ./node_modules/.bin/eslint src/
 ```
 ### NSP
 
