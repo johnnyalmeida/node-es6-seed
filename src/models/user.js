@@ -15,7 +15,7 @@ class UserModel {
 
     knex.select("*")
         .from("recarga.user")
-        .where('user_id', '=', (id)
+        .where('user_id', '=', (id))
         .then(function (values) {
 
       return values
