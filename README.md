@@ -1,6 +1,8 @@
 # node-es6-seed
 Seed project created to serve as a starting point for new projects, suggesting some patterns, dependencies/pacakges and style guide.
 
+[![Build Status](https://travis-ci.org/4alltecnologia/node-es6-seed.svg?branch=master)](https://travis-ci.org/4alltecnologia/node-es6-seed)
+
 ### Stack
 
 | Responsability  | What |
