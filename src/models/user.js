@@ -1,29 +1,22 @@
 const winston = require('winston');
-const knex = require('../config/db');
 
 class UserModel {
 
-  create() {
-    winston.info('UserModel: create()');
-  }
-
-  remove() {
-    winston.info('UserModel: remove(0)');
+  constructor(db) {
+    this.db = db;
   }
 
   findById(id) {
-
-    knex.select("*")
-        .from("recarga.user")
+    this.db.select('*')
+        .from('recarga.user')
         .where('user_id', '=', (id))
-        .then(function (values) {
-
-      return values
-    }).catch(function(err) {
-      winston.error(err);
-    });
-
-    winston.info('UserModel: remove(0)');
+        .then((values) => {
+          winston.info(values);
+          return values;
+        })
+        .catch((err) => {
+          winston.error(err);
+        });
   }
 
 }

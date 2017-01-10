@@ -1,22 +1,16 @@
 const winston = require('winston');
 const UserModel = require('../models/user');
-const userModel = new UserModel();
+const knex = require('../config/db');
 
 class UserController {
 
-  create() {
-    winston.info('UserController: create()');
-    userModel.create();
+  constructor() {
+    this.userModel = new UserModel(knex);
   }
 
-  remove() {
-    winston.info('UserController: remove()');
-    userModel.remove();
-  }
-
-  findById(id) {
+  findById() {
     winston.info('UserController: findById()');
-    return userModel.findById(id);
+    return this.userModel.findById(1);
   }
 
 }
