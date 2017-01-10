@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "pm2 start src/index.js",
-    "test": "eslint src"
+    "test": "nyc ava",
+    "lint": "eslint src test",
+    "cover": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -32,8 +34,11 @@
     "winston": "^2.3.0"
   },
   "devDependencies": {
+    "ava": "^0.17.0",
+    "coveralls": "^2.11.15",
     "eslint": "^3.12.2",
     "eslint-config-airbnb-base": "^11.0.0",
-    "eslint-plugin-import": "^2.2.0"
+    "eslint-plugin-import": "^2.2.0",
+    "nyc": "^10.0.0"
   }
 }
