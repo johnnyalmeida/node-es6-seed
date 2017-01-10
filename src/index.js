@@ -59,3 +59,11 @@ app.get('/status', (req, res) => {
 app.listen(process.env.PORT, () => {
   winston.info('Server started...');
 });
+
+
+/* Close database */
+process.on("exit", function() {
+  knex.close();
+  knex.disconnect();
+})
+
