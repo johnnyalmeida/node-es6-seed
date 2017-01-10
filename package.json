@@ -7,7 +7,7 @@
     "dev": "nodemon src/index.js",
     "start": "pm2 start src/index.js",
     "test": "nyc ava",
-    "lint": "eslint src test",
+    "lint": "eslint src test || exit 0",
     "cover": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
