@@ -5,6 +5,9 @@ const helmet = require('helmet');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+/* Routes */
+const userRoutes = require('./routes/user');
+
 /* Express initialization */
 const app = express();
 
@@ -24,6 +27,9 @@ app.use(bodyParser.json({
 app.get('/status', (req, res) => {
   res.send('ok');
 });
+
+/* Instatiate routes */
+app.use('/users', userRoutes);
 
 /* Startup message */
 app.listen(process.env.PORT, () => {

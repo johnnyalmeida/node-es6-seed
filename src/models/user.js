@@ -6,13 +6,11 @@ class UserModel {
     this.db = db;
   }
 
-  findById(id) {
-    this.db.select('*')
+  findAll() {
+    return this.db.select('*')
         .from('recarga.user')
-        .where('user_id', '=', (id))
-        .then((values) => {
-          winston.info(values);
-          return values;
+        .then((rows) => {
+          return rows;
         })
         .catch((err) => {
           winston.error(err);

@@ -1,4 +1,3 @@
-const winston = require('winston');
 const UserModel = require('../models/user');
 const knex = require('../config/db');
 
@@ -8,9 +7,14 @@ class UserController {
     this.userModel = new UserModel(knex);
   }
 
-  findById() {
-    winston.info('UserController: findById()');
-    return this.userModel.findById(1);
+  findAll(req, res) {
+    this.userModel.findAll()
+      .then((rows) => {
+        res.send({ success: true, data: rows });
+      })
+      .catch((err) => {
+        res.send({ success: false, message: err });
+      });
   }
 
 }
