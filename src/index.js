@@ -38,6 +38,5 @@ app.listen(process.env.PORT, () => {
 
 /* Close database */
 process.on('exit', () => {
-  knex.close();
-  knex.disconnect();
+  knex.destroy();
 });

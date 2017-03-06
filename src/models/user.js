@@ -9,9 +9,6 @@ class UserModel {
   findAll() {
     return this.db.select('*')
         .from('recarga.user')
-        .then((rows) => {
-          return rows;
-        })
         .catch((err) => {
           winston.error(err);
         });
