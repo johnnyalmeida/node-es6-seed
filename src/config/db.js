@@ -13,7 +13,7 @@ const connection = require('knex')({
     bigNumberStrings: true,
     multipleStatements: true,
     timezone: 'UTC',
-    dateStrings: true
+    dateStrings: true,
   },
   pool: { min: process.env.DB_POOL_MIN, max: process.env.DB_POOL_MAX },
 });
