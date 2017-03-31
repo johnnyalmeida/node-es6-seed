@@ -1,7 +1,7 @@
 const Joi = require("joi");
-const RequestValidator = require("../../middlewares/RouteValidator");
+const RouteValidator = require("../../middlewares/RouteValidator");
 
-class RecurrenceSchema extends RequestValidator {
+class UserSchema extends RouteValidator {
 
   static get get() {
     const schema = {
@@ -54,4 +54,4 @@ class RecurrenceSchema extends RequestValidator {
 
 }
 
-module.exports = RecurrenceSchema;
+module.exports = UserSchema;
