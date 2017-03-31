@@ -1,7 +1,8 @@
 {
   "type": "object",
   "properties": {
-    "userId": { "type": "string" }
+    "userId": { "type": "string" },
+    "name": { "type": "string" }
   },
   "required": ["userId"]
 }
