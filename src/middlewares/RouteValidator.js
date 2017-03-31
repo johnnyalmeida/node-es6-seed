@@ -26,4 +26,4 @@ class RouteValidator {
   }
 }
 
-module.exports = RouteValidator
+module.exports = RouteValidator;
