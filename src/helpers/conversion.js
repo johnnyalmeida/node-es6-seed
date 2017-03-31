@@ -19,6 +19,10 @@ class Conversion {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  static toUnixEpoch(dateString) {
+    return moment.utc(dateString).valueOf();
+  }
+
   /* https://github.com/the-darc/string-mask */
   static format(string, mask) {
     return StringMask.apply(string, mask);
