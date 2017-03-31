@@ -1,57 +1,22 @@
 const express = require('express');
-const _ = require('lodash');
-const schemas = require('../schemas/index');
-const validation = require('../helpers/validation.js');
 const UserController = require('../controllers/UserController');
+const UserSchema = require('../routes/schemas/UserSchema');
 
 const router = express.Router();
 
 /* GET /user */
-router.get('/', (req, res) => {
-  const query = _.extend({}, req.params, req.query);
-  const valid = validation.schema(res, query, schemas.user.list);
-
-  if (valid) {
-    UserController.list(req, res);
-  }
-});
+router.get('/', UserSchema.list, UserController.list);
 
 /* GET /user/:userId */
-router.get('/:userId', (req, res) => {
-  const query = _.extend({}, req.params, req.query);
-  const valid = validation.schema(res, query, schemas.user.get);
-
-  if (valid) {
-    UserController.get(req, res);
-  }
-});
+router.get('/:userId', UserSchema.get, UserController.get);
 
 /* POST /user */
-router.post('/', (req, res) => {
-  const valid = validation.schema(res, req.body, schemas.user.post);
-
-  if (valid) {
-    UserController.post(req, res);
-  }
-});
+router.post('/', UserSchema.post, UserController.post);
 
 /* PUT /user/:userId */
-router.put('/:userId', (req, res) => {
-  const query = _.extend({}, req.params, req.body);
-  const valid = validation.schema(res, query, schemas.user.put);
-
-  if (valid) {
-    UserController.put(req, res);
-  }
-});
+router.put('/:userId', UserSchema.put, UserController.put);
 
 /* DELETE /user/:userId */
-router.delete('/:userId', (req, res) => {
-  const valid = validation.schema(res, req.params, schemas.user.delete);
-
-  if (valid) {
-    UserController.delete(req, res);
-  }
-});
+router.delete('/:userId', UserSchema.delete, UserController.delete);
 
 module.exports = router;
