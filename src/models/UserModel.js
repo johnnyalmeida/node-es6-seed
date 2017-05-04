@@ -1,32 +1,29 @@
 const { utc } = require('moment');
-const log = require('../config/log');
+const knex = require('../config/db');
 const userType = require('../types/user');
 
 class UserModel {
 
-  static list(knex) {
+  static list() {
     return knex
     .from('user')
-    .whereNot('user.status', userType.DELETED)
-    .catch(log.database);
+    .whereNot('user.status', userType.DELETED);
   }
 
-  static get(data, knex) {
+  static get(data) {
     return knex
     .from('user')
     .where('user.id', data.userId)
-    .whereNot('user.status', userType.DELETED)
-    .catch(log.database);
+    .whereNot('user.status', userType.DELETED);
   }
 
-  static post(data, knex) {
+  static post(data) {
     return knex
     .from('user')
-    .insert(data)
-    .catch(log.database);
+    .insert(data);
   }
 
-  static put(data, knex) {
+  static put(data) {
     const query = knex
     .from('user');
 
@@ -34,24 +31,21 @@ class UserModel {
       query.update('name', data.name);
     }
 
-    query
-    .where('user.id', data.userId)
-    .whereNot('user.status', userType.DELETED)
-    .catch(log.database);
+    query.where('user.id', data.userId)
+    .whereNot('user.status', userType.DELETED);
 
     return query;
   }
 
-  static delete(data, knex) {
+  static delete(data) {
     return knex
     .from('user')
     .where('user.id', data.userId)
     .whereNot('user.status', userType.DELETED)
     .update({
       status: userType.DELETED,
-      deleted_at: utc().format('YYYY-MM-DD HH:mm:ss'),
-    })
-    .catch(log.database);
+      deletedAt: utc().format('YYYY-MM-DD HH:mm:ss'),
+    });
   }
 
 }

@@ -2,7 +2,7 @@ const express = require('express');
 const UserController = require('../controllers/UserController');
 const UserSchema = require('../routes/schemas/UserSchema');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 /* GET /user */
 router.get('/', UserSchema.list, UserController.list);
