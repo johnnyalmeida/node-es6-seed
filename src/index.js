@@ -13,7 +13,9 @@ const userRoutes = require('./routes/user');
 /* Express initialization */
 const app = express();
 
-const log = require('./config/log');
+/* Logger */
+const LoggerConfig = require('./config/LoggerConfig');
+const Logger = require('./helpers/Logger');
 
 /* Express utilites */
 app.use(helmet());
@@ -22,22 +24,8 @@ app.use(bodyParser.json({
   limit: process.env.BODY_LIMIT,
 }));
 
-app.use((req, res, next) => {
-  res.sendAndLog = (obj) => {
-    log.info([
-      req.method,
-      req.originalUrl,
-      `URLparams: ${JSON.stringify(req.params)}`,
-      `Query Params: ${JSON.stringify(req.query)}`,
-      `body: ${JSON.stringify(req.body)}`,
-      `response: ${JSON.stringify(obj)}`,
-    ].join(' | '));
-
-    res.json(obj);
-  };
-
-  next();
-});
+/* Log express request and response */
+LoggerConfig.expressRequest(app);
 
 /* Status endpoint */
 app.get('/status', (req, res) => {
@@ -47,18 +35,17 @@ app.get('/status', (req, res) => {
 /* Instatiate routes */
 app.use('/user', userRoutes);
 
-/* Errors */
-app.use((err, req, res, next) => { // no-unused-vars
-  log.error(err);
-  res.status(500).send({ success: false, code: '2381907443' });
-});
+/* Log errors */
+LoggerConfig.expressError(app);
 
 app.all('*', (req, res) => {
-  log.error('Not Found');
-  res.status(404).send({ success: false, code: '0123456789' });
+  Logger.warning('Not Found');
+  res.status(404).send({ success: false, code: '404' });
 });
 
 /* Startup message */
 app.listen(process.env.PORT, () => {
-  log.info('Server started on port '.concat(process.env.PORT));
+  /* Configure Log */
+  LoggerConfig.init();
+  Logger.info(`Server started on port ${process.env.PORT}`);
 });

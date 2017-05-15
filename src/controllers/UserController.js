@@ -1,39 +1,39 @@
+const Logger = require('../helpers/Logger');
 const UserService = require('../services/UserService');
-const knex = require('../config/db');
 
 class UserController {
 
   static list(req, res) {
-    UserService.list(knex)
+    UserService.list()
       .then((rows) => {
-        res.status(200).sendAndLog({ success: true, data: rows });
+        res.send({ success: true, data: rows });
       })
-      .catch(() => {
-        res.status(500).sendAndLog({ success: false, code: '3272358416', message: 'Falha ao listar usuários.' });
+      .catch((err) => {
+        Logger.throw(res, '3272358416', err);
       });
   }
 
   static get(req, res) {
-    UserService.get(req.params, knex)
+    UserService.get(req.params)
       .then((user) => {
         if (!user) {
-          res.status(200).sendAndLog({ success: false, code: '7731668134', message: 'Usuário não encontrado.' });
+          res.send({ success: false, code: '7731668134', message: 'Usuário não encontrado.' });
           return;
         }
-        res.status(200).sendAndLog({ success: true, user });
+        res.send({ success: true, data: user });
       })
-      .catch(() => {
-        res.status(500).sendAndLog({ success: false, code: '6001059324', message: 'Falha ao buscar usuário.' });
+      .catch((err) => {
+        Logger.throw(res, '6001059324', err);
       });
   }
 
   static post(req, res) {
-    UserService.post(req.body, knex)
+    UserService.post(req.body)
       .then((ids) => {
-        res.status(201).sendAndLog({ success: true, id: ids[0] });
+        res.send({ success: true, id: ids[0] });
       })
-      .catch(() => {
-        res.status(500).sendAndLog({ success: false, code: '2365958507', message: 'Falha criar usuário.' });
+      .catch((err) => {
+        Logger.throw(res, '2365958507', err);
       });
   }
 
@@ -43,30 +43,30 @@ class UserController {
       name: req.body.name,
     };
 
-    UserService.put(data, knex)
+    UserService.put(data)
       .then((user) => {
         if (!user) {
-          res.status(200).sendAndLog({ success: false, code: '7502749763', message: 'Usuário não encontrado.' });
+          res.send({ success: false, code: '7502749763', message: 'Usuário não encontrado.' });
           return;
         }
-        res.status(200).sendAndLog({ success: true });
+        res.send({ success: true });
       })
-      .catch(() => {
-        res.status(500).sendAndLog({ success: false, code: '5768905470', message: 'Falha ao atualizar usuário.' });
+      .catch((err) => {
+        Logger.throw(res, '5768905470', err);
       });
   }
 
   static delete(req, res) {
-    UserService.delete(req.params, knex)
+    UserService.delete(req.params)
       .then((user) => {
         if (!user) {
-          res.status(200).sendAndLog({ success: false, code: '9517673561', message: 'Usuário não encontrado.' });
+          res.send({ success: false, code: '9517673561', message: 'Usuário não encontrado.' });
           return;
         }
-        res.status(200).sendAndLog({ success: true });
+        res.send({ success: true });
       })
-      .catch(() => {
-        res.status(500).sendAndLog({ success: false, code: '7019803632', message: 'Falha ao deletar usuário.' });
+      .catch((err) => {
+        Logger.throw(res, '5768905476', err);
       });
   }
 
