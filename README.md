@@ -1,4 +1,4 @@
-# node-es6-seed [![Build Status](https://travis-ci.org/4alltecnologia/node-es6-seed.svg?branch=master)](https://travis-ci.org/4alltecnologia/node-es6-seed) [![Coverage Status](https://coveralls.io/repos/github/4alltecnologia/node-es6-seed/badge.svg?branch=master)](https://coveralls.io/github/4alltecnologia/node-es6-seed?branch=master)
+# node-es6-seed [![Build Status](https://travis-ci.org/4alltecnologia/node-es6-seed.svg?branch=master)](https://travis-ci.org/4alltecnologia/node-es6-seed) [![Coverage Status](https://coveralls.io/repos/github/4alltecnologia/node-es6-seed/badge.svg?branch=master)](https://coveralls.io/github/4alltecnologia/node-es6-seed?branch=master) [![Known Vulnerabilities](https://snyk.io/test/github/4alltecnologia/node-es6-seed/badge.svg)](https://snyk.io/test/github/4alltecnologia/node-es6-seed) [![Dependency Status](https://gemnasium.com/badges/github.com/4alltecnologia/node-es6-seed.svg)](https://gemnasium.com/github.com/4alltecnologia/node-es6-seed)
 
 Seed project created to serve as a starting point for new projects, suggesting some patterns, dependencies/packages and style guide.
 
