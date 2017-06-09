@@ -4,8 +4,10 @@
   "description": "Seed project created to serve as a starting point for new projects, suggesting some patterns, dependencies/pacakges and style guide.",
   "main": "index.js",
   "scripts": {
+    "start": "pm2 start process.yml",
+    "stop": "pm2 stop process.yml",
+    "restart": "pm2 restart process.yml",
     "dev": "nodemon src/index.js",
-    "start": "pm2 start src/index.js",
     "test": "nyc ava",
     "lint": "eslint src test || exit 0",
     "cover": "nyc report --reporter=text-lcov | coveralls"
@@ -18,13 +20,17 @@
     "seed",
     "project",
     "4all",
-    "node"
+    "node",
+    "pm2",
+    "docker",
+    "knex"
   ],
-  "author": "Ulysses Marins",
+  "author": "4All Tecnologia EPP",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
+    "cron": "^1.2.1",
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
     "express-winston": "^2.4.0",
