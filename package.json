@@ -22,7 +22,6 @@
     "4all",
     "node",
     "pm2",
-    "docker",
     "knex"
   ],
   "author": "4All Tecnologia EPP",
