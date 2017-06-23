@@ -3,6 +3,7 @@ const expressWinston = require('express-winston');
 const WFirehose = require('winston-firehose');
 const request = require('request');
 const debug = require('request-debug');
+const moment = require('moment');
 const Logger = require('../helpers/Logger');
 
 const instances = {
@@ -48,6 +49,9 @@ class LoggerConfig {
 
     if (process.env.CONSOLE === 'true') {
       transports.push(new winston.transports.Console({
+        timestamp: () => {
+          return moment.utc().format('YYYY-MM-DD HH:mm:ss');
+        },
         json: false,
         colorize: true,
       }));
@@ -90,6 +94,7 @@ class LoggerConfig {
       message = {
         id: data.debugId,
         type,
+        date: moment.utc().format('YYYY-MM-DD hh:mm:ss'),
         url: data.uri,
         method: data.method,
         message: data.body,
@@ -99,6 +104,7 @@ class LoggerConfig {
       message = {
         id: data.debugId,
         type,
+        date: moment.utc().format('YYYY-MM-DD hh:mm:ss'),
         status,
         message: data.body,
       };
