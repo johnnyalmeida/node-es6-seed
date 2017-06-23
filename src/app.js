@@ -28,7 +28,7 @@ app.use(bodyParser.json({
 LoggerConfig.expressRequest(app);
 
 /* Status endpoint */
-app.get('/status', (req, res) => {
+app.get('/', (req, res) => {
   res.send('ok');
 });
 
