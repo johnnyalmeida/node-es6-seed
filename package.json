@@ -2,12 +2,12 @@
   "name": "nodejs-seed-project",
   "version": "1.0.0",
   "description": "Seed project created to serve as a starting point for new projects, suggesting some patterns, dependencies/pacakges and style guide.",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
     "start": "pm2 start process.yml",
     "stop": "pm2 stop process.yml",
     "restart": "pm2 restart process.yml",
-    "dev": "nodemon src/index.js",
+    "dev": "nodemon src/app.js",
     "test": "nyc ava",
     "lint": "eslint src test || exit 0",
     "cover": "nyc report --reporter=text-lcov | coveralls"
