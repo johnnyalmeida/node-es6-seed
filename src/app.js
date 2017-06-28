@@ -6,6 +6,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const compression = require('compression');
 
 /* Routes */
 const userRoutes = require('./routes/user');
@@ -20,6 +21,7 @@ const Logger = require('./helpers/Logger');
 /* Express utilites */
 app.use(helmet());
 app.use(cors());
+app.use(compression());
 app.use(bodyParser.json({
   limit: process.env.BODY_LIMIT,
 }));

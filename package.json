@@ -28,6 +28,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "compression": "^1.6.2",
     "cors": "^2.8.1",
     "cron": "^1.2.1",
     "dotenv": "^2.0.0",
