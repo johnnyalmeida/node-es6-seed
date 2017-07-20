@@ -162,7 +162,7 @@ class LoggerConfig {
       winstonInstance: winston,
       bodyBlacklist: [],
       meta: true,
-      msg: '',
+      msg: '{{req.method}} {{req.url}}',
       expressFormat: true,
       colorStatus: true,
       requestFilter: (req, propName) => {
