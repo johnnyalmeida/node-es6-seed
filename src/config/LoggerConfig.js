@@ -157,6 +157,7 @@ class LoggerConfig {
   static getLoggerOptions() {
     const requestFilterBlacklist = ['headers', 'httpVersion', 'originalUrl'];
     const responseFilterBlacklist = [];
+    const ignoredRoutes = ['/', '/status', '/favicon.ico'];
 
     return {
       winstonInstance: winston,
@@ -165,6 +166,7 @@ class LoggerConfig {
       msg: '{{req.method}} {{req.url}}',
       expressFormat: true,
       colorStatus: true,
+      ignoredRoutes,
       requestFilter: (req, propName) => {
         if (requestFilterBlacklist.indexOf(propName) >= 0) {
           return undefined;
