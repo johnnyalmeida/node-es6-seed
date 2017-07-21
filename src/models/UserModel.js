@@ -1,5 +1,5 @@
 const { utc } = require('moment');
-const knex = require('../config/db');
+const { knex } = require('../config/db');
 const userType = require('../types/user');
 
 class UserModel {
