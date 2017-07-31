@@ -17,7 +17,7 @@ class UserController {
     UserService.get(req.params)
       .then((user) => {
         if (!user) {
-          res.send({ success: false, code: '7731668134', message: 'Usuário não encontrado.' });
+          res.send({ success: false, code: '7731668134', message: req.__('api.user.notFound') });
           return;
         }
         res.send({ success: true, data: user });
@@ -46,7 +46,7 @@ class UserController {
     UserService.put(data)
       .then((user) => {
         if (!user) {
-          res.send({ success: false, code: '7502749763', message: 'Usuário não encontrado.' });
+          res.send({ success: false, code: '7502749763', message: req.__('api.user.notFound') });
           return;
         }
         res.send({ success: true });
@@ -60,7 +60,7 @@ class UserController {
     UserService.delete(req.params)
       .then((user) => {
         if (!user) {
-          res.send({ success: false, code: '9517673561', message: 'Usuário não encontrado.' });
+          res.send({ success: false, code: '9517673561', message: req.__('api.user.notFound') });
           return;
         }
         res.send({ success: true });
