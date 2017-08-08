@@ -3,3 +3,6 @@ plugins:
   - import
 rules:
   arrow-body-style: 0
+  no-underscore-dangle: 0
+globals:
+  __: true

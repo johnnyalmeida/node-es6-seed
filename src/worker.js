@@ -4,6 +4,7 @@ require('dotenv').config();
 /* Dependencies */
 /* https://github.com/kelektiv/node-cron */
 const CronJob = require('cron').CronJob;
+require('./config/i18n');
 
 /* Logger */
 const LoggerConfig = require('./config/LoggerConfig');

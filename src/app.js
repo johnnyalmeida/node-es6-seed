@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const compression = require('compression');
+const i18n = require('./config/i18n');
 
 /* Routes */
 const userRoutes = require('./routes/user');
@@ -22,6 +23,7 @@ const Logger = require('./helpers/Logger');
 app.use(helmet());
 app.use(cors());
 app.use(compression());
+app.use(i18n.init);
 app.use(bodyParser.json({
   limit: process.env.BODY_LIMIT,
 }));
@@ -41,7 +43,6 @@ app.use('/user', userRoutes);
 LoggerConfig.expressError(app);
 
 app.all('*', (req, res) => {
-  Logger.warning('Not Found');
   res.status(404).send({ success: false, code: '404' });
 });
 
