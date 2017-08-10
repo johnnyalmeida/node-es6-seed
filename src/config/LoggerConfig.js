@@ -163,8 +163,8 @@ class LoggerConfig {
       winstonInstance: winston,
       bodyBlacklist: [],
       meta: true,
-      msg: '{{req.method}} {{req.url}}',
-      expressFormat: true,
+      msg: 'HTTP {{res.statusCode}} {{req.method}} {{req.url}}',
+      expressFormat: false,
       colorStatus: true,
       ignoredRoutes,
       requestFilter: (req, propName) => {
