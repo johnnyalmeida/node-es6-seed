@@ -34,6 +34,28 @@ $ npm install -g nodemon
 $ npm run dev
 ```
 
+### Docker
+
+```sh
+# Build image
+$ docker build -t <your username>/xablau .
+
+# List images
+$ docker images
+
+# Run images
+$ docker run -p 49160:3000 -d <your username>/xablau
+
+# Get container id
+$ docker ps
+
+# App output
+$ docker logs <container id>
+
+# Run commands inside the container
+$ docker exec -it <container id> /bin/bash
+```
+
 ### PM2
 
 #### Running PM2 on server boots
