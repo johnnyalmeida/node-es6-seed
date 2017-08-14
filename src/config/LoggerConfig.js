@@ -111,7 +111,7 @@ class LoggerConfig {
     }
 
     if (message) {
-      switch (Logger.getLevelByStatusCode(status)) {
+      switch (this.getLevelByStatusCode(status)) {
         case 'warning': Logger.warning(message); break;
         case 'error': Logger.error(message); break;
         case 'crit': Logger.crit(message); break;
