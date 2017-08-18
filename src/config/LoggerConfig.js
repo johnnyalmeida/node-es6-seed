@@ -157,11 +157,11 @@ class LoggerConfig {
   static getLoggerOptions() {
     const requestFilterBlacklist = ['headers', 'httpVersion', 'originalUrl'];
     const responseFilterBlacklist = [];
+    const bodyBlacklist = [];
     const ignoredRoutes = ['/', '/status', '/favicon.ico'];
 
     return {
       winstonInstance: winston,
-      bodyBlacklist: [],
       meta: true,
       msg: 'HTTP {{res.statusCode}} {{req.method}} {{req.url}}',
       expressFormat: false,
@@ -177,6 +177,15 @@ class LoggerConfig {
         if (responseFilterBlacklist.indexOf(propName) >= 0) {
           return undefined;
         }
+
+        if (propName === 'body' && bodyBlacklist.length > 0) {
+          for (let i in res[propName]) {
+            if (bodyBlacklist.indexOf(i) >= 0) {
+              res[propName][i] = 'protected';
+            }
+          }
+        }
+
         return res[propName];
       },
       dynamicMeta: (req) => {
