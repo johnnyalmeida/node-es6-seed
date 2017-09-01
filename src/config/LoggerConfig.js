@@ -159,6 +159,7 @@ class LoggerConfig {
     const responseFilterBlacklist = [];
     const bodyBlacklist = [];
     const ignoredRoutes = ['/', '/status', '/favicon.ico'];
+    const skiped = [{ name: 'download', value: 'true' }];
 
     return {
       winstonInstance: winston,
@@ -193,6 +194,18 @@ class LoggerConfig {
           session: req.session ? req.session.id : null,
           user: req.session ? req.session.user.id : null,
         };
+      },
+      skip: (req, res) => {
+        const query = req.query || {};
+
+        for (let skip in skiped) {
+          let property = query.hasOwnProperty(skip.name);
+          if (property === skip.value) {
+            return true;
+          }
+        }
+
+        return false;
       },
     };
   }
