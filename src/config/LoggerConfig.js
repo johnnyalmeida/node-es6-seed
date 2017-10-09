@@ -159,7 +159,6 @@ class LoggerConfig {
     const responseFilterBlacklist = [];
     const bodyBlacklist = [];
     const ignoredRoutes = ['/', '/status', '/favicon.ico'];
-    const skiped = [{ name: 'download', value: 'true' }];
 
     return {
       winstonInstance: winston,
