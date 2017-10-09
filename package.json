@@ -32,14 +32,15 @@
     "compression": "^1.6.2",
     "cors": "^2.8.1",
     "cron": "^1.2.1",
-    "dotenv": "^2.0.0",
+    "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "express-winston": "^2.4.0",
     "helmet": "^3.3.0",
     "i18n": "^0.8.3",
-    "joi": "^10.3.1",
-    "knex": "^0.12.6",
+    "joi": "^11.3.3",
+    "knex": "^0.13.0",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
     "moment-timezone": "^0.5.11",
     "mysql2": "^1.1.2",
     "request": "^2.81.0",
@@ -49,11 +50,11 @@
     "winston-firehose": "^1.0.8"
   },
   "devDependencies": {
-    "ava": "^0.17.0",
-    "coveralls": "^2.11.15",
-    "eslint": "^3.12.2",
-    "eslint-config-airbnb-base": "^11.0.0",
+    "ava": "^0.22.0",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb-base": "^12.0.2",
     "eslint-plugin-import": "^2.2.0",
-    "nyc": "^10.0.0"
+    "nyc": "^11.2.1"
   }
 }

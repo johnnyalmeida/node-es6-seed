@@ -111,7 +111,7 @@ class LoggerConfig {
     }
 
     if (message) {
-      switch (this.getLevelByStatusCode(status)) {
+      switch (LoggerConfig.getLevelByStatusCode(status)) {
         case 'warning': Logger.warning(message); break;
         case 'error': Logger.error(message); break;
         case 'crit': Logger.crit(message); break;
@@ -179,7 +179,7 @@ class LoggerConfig {
           return undefined;
         }
 
-        if (propName === 'body' && bodyBlacklist.length > 0) {
+        if (propName === 'body' && res[propName] && bodyBlacklist.length > 0) {
           for (let i in res[propName]) {
             if (bodyBlacklist.indexOf(i) >= 0) {
               res[propName][i] = 'protected';
@@ -195,14 +195,9 @@ class LoggerConfig {
           user: req.session ? req.session.user.id : null,
         };
       },
-      skip: (req, res) => {
-        const query = req.query || {};
-
-        for (let skip in skiped) {
-          let property = query.hasOwnProperty(skip.name);
-          if (property === skip.value) {
-            return true;
-          }
+      skip: (req) => {
+        if (req.method.toUpperCase() === 'GET') {
+          return true;
         }
 
         return false;
