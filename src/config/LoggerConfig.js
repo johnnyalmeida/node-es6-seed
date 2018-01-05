@@ -1,10 +1,11 @@
 const winston = require('winston');
 const expressWinston = require('express-winston');
-const WFirehose = require('winston-firehose');
 const request = require('request');
 const debug = require('request-debug');
-const moment = require('moment');
+const moment = require('moment-timezone');
+const { clone, each } = require('lodash');
 const Logger = require('../helpers/Logger');
+const Settings = require('./Settings');
 
 const instances = {
   init: false,
@@ -13,7 +14,6 @@ const instances = {
 };
 
 class LoggerConfig {
-
   static init() {
     if (instances.init) {
       throw Error('Logger: init already executed');
@@ -33,29 +33,16 @@ class LoggerConfig {
   }
 
   static getTransports() {
-    const transports = [];
-
-    /* https://github.com/pkallos/winston-firehose */
-    if (process.env.FIREHOSE === 'true') {
-      transports.push(new WFirehose({
-        streamName: process.env.FIREHOSE_STREAM_NAME,
-        firehoseOptions: {
-          region: process.env.FIREHOSE_REGION,
-          accessKeyId: process.env.FIREHOSE_ACCESS_KEY_ID,
-          secretAccessKey: process.env.FIREHOSE_SECRET_ACCESS_KEY,
-        },
-      }));
-    }
-
-    if (process.env.CONSOLE === 'true') {
-      transports.push(new winston.transports.Console({
+    const transports = [
+      new winston.transports.Console({
         timestamp: () => {
           return moment.utc().format('YYYY-MM-DD HH:mm:ss');
         },
         json: false,
         colorize: true,
-      }));
-    }
+      }),
+    ];
+
 
     return transports;
   }
@@ -122,6 +109,20 @@ class LoggerConfig {
     }
   }
 
+  static replacePropertyValue(keys, object) {
+    const newObject = clone(object);
+
+    each(object, (val, key) => {
+      if (keys.indexOf(key) !== -1) {
+        newObject[key] = '******';
+      } else if (typeof (val) === 'object') {
+        newObject[key] = LoggerConfig.replacePropertyValue(keys, val);
+      }
+    });
+
+    return newObject;
+  }
+
   static expressRequest(app) {
     if (instances.expressRequest) {
       throw Error('Logger: expressRequest already executed');
@@ -153,11 +154,10 @@ class LoggerConfig {
     return level;
   }
 
-  /* https://github.com/bithavoc/express-winston */
   static getLoggerOptions() {
     const requestFilterBlacklist = ['headers', 'httpVersion', 'originalUrl'];
     const responseFilterBlacklist = [];
-    const bodyBlacklist = [];
+    const bodyBlacklist = Settings.get('LOG_BODY_BLACKLIST') || [];
     const ignoredRoutes = ['/', '/status', '/favicon.ico'];
 
     return {
@@ -179,11 +179,7 @@ class LoggerConfig {
         }
 
         if (propName === 'body' && res[propName] && bodyBlacklist.length > 0) {
-          for (let i in res[propName]) {
-            if (bodyBlacklist.indexOf(i) >= 0) {
-              res[propName][i] = 'protected';
-            }
-          }
+          return LoggerConfig.replacePropertyValue(bodyBlacklist, res[propName]);
         }
 
         return res[propName];
@@ -195,7 +191,8 @@ class LoggerConfig {
         };
       },
       skip: (req) => {
-        if (req.method.toUpperCase() === 'GET') {
+        const method = req.method.toUpperCase();
+        if (method === 'GET' || method === 'OPTIONS') {
           return true;
         }
 

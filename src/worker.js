@@ -1,16 +1,14 @@
 /* .env lib */
 require('dotenv').config();
+const debug = require('debug')('worker');
 
 /* Dependencies */
-/* https://github.com/kelektiv/node-cron */
-const CronJob = require('cron').CronJob;
 require('./config/i18n');
+const Cron = require('./helpers/Cron');
 
 /* Logger */
 const LoggerConfig = require('./config/LoggerConfig');
 const Logger = require('./helpers/Logger');
-
-LoggerConfig.init();
 
 /* Crons */
 const EverySecond = require('./crons/EverySecond.js');
@@ -18,12 +16,16 @@ const EverySecond = require('./crons/EverySecond.js');
 /* Services */
 const services = [];
 
-// You will see this message every second
-services.push(new CronJob('* * * * * *', EverySecond.runner, null, false));
+debug('load settings');
+(async () => {
+  await Settings.load();
+  await LoggerConfig.init();
 
-/* Start services */
-services.map((service) => {
-  return service.start();
-});
+  debug('load workers');
+  Cron.add(Settings.get('CRON_EVERY_SECOND'), EverySecond.runner);
 
-Logger.info(`Worker started ${services.length} services`);
+  debug('start workers');
+  Cron.startAll();
+
+  debug(`Worker started ${services.length} services`);
+})();

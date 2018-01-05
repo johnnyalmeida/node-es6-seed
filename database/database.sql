@@ -1,8 +1,20 @@
-CREATE DATABASE IF NOT EXISTS `seed_project`
+CREATE DATABASE IF NOT EXISTS `seedProject`
   DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `seed_project`.`user` (
+CREATE TABLE IF NOT EXISTS `seedProject`.`settings` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(80) NOT NULL,
+  `type` ENUM('BOOLEAN', 'NUMBER', 'FLOAT', 'STRING', 'OBJECT') NOT NULL,
+  `value` TEXT NOT NULL,
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updateAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC)
+) ENGINE = InnoDB;
+
+
+CREATE TABLE IF NOT EXISTS `seedProject`.`user` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(500) NOT NULL,
   `status` VARCHAR (7) NOT NULL DEFAULT 'VALID',
@@ -11,3 +23,9 @@ CREATE TABLE IF NOT EXISTS `seed_project`.`user` (
   `deletedAt` TIMESTAMP NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
+
+
+INSERT INTO `seedProject`.`settings` (`name`, `type`, `value`) VALUES
+('LOG_BODY_BLACKLIST', 'OBJECT', '[\'password\']'),
+('CRON_EVERY_SECOND', 'STRING', '* * * * * *');
+
