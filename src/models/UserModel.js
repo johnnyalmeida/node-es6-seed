@@ -1,4 +1,3 @@
-const { utc } = require('moment');
 const { knex } = require('../config/db');
 const userType = require('../types/user');
 
@@ -10,10 +9,11 @@ class UserModel {
     .whereNot('user.status', userType.DELETED);
   }
 
-  static get(data) {
+  static get(userId) {
     return knex
+    .first('id, name, status')
     .from('user')
-    .where('user.id', data.userId)
+    .where('user.id', userId)
     .whereNot('user.status', userType.DELETED);
   }
 
@@ -23,7 +23,7 @@ class UserModel {
     .insert(data);
   }
 
-  static put(data) {
+  static put(userId, data) {
     const query = knex
     .from('user');
 
@@ -31,20 +31,20 @@ class UserModel {
       query.update('name', data.name);
     }
 
-    query.where('user.id', data.userId)
+    query.where('user.id', userId)
     .whereNot('user.status', userType.DELETED);
 
     return query;
   }
 
-  static delete(data) {
+  static delete(userId) {
     return knex
     .from('user')
-    .where('user.id', data.userId)
+    .where('user.id', userId)
     .whereNot('user.status', userType.DELETED)
     .update({
       status: userType.DELETED,
-      deletedAt: utc().format('YYYY-MM-DD HH:mm:ss'),
+      deletedAt: knex.raw('NOW()'),
     });
   }
 

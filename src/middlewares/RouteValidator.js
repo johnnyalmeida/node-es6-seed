@@ -3,7 +3,7 @@ const Joi = require('joi');
 class RouteValidator {
 
   static validate(schema) {
-    return this._validate.bind(schema); // eslint-disable-line
+    return this._validate.bind(schema);
   }
 
   static _validate(req, res, next) {
@@ -15,7 +15,9 @@ class RouteValidator {
       return k;
     });
 
-    const validation = Joi.validate(data, schema);
+    const validation = Joi.validate(data, schema, {
+      allowUnknown: true,
+    });
 
     if (!validation.error) {
       next();
