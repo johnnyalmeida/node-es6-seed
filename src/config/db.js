@@ -18,8 +18,8 @@ if (typeof global.database === 'object') {
       dateStrings: true,
     },
     pool: {
-      min: process.env.DB_POOL_MIN,
-      max: process.env.DB_POOL_MAX,
+      min: parseInt(process.env.DB_POOL_MIN || 0, 10),
+      max: parseInt(process.env.DB_POOL_MAX || 1, 10),
     },
   };
 }
