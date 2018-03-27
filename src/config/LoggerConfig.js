@@ -2,7 +2,10 @@ const winston = require('winston');
 const morgan = require('morgan');
 const moment = require('moment-timezone');
 const winstonStream = require('winston-stream');
-const { clone, each, isEmpty } = require('lodash');
+const Firehose = require('winston-firehose');
+const clone = require('lodash/clone');
+const each = require('lodash/each');
+const isEmpty = require('lodash/isEmpty');
 const Logger = require('../helpers/Logger');
 
 const rules = {
@@ -27,62 +30,27 @@ class LoggerConfig {
     LoggerConfig.loadSkipStatus();
     LoggerConfig.loadSkipKeys();
 
-    let stream = null;
-    switch (process.env.LOGGER_STREAM_TYPE) {
-      default: stream = winstonStream(winston, 'info');
-    }
+    return [
+      LoggerConfig.createLoggerByLevel('info'),
+      LoggerConfig.createLoggerByLevel('warning'),
+      LoggerConfig.createLoggerByLevel('notice'),
+      LoggerConfig.createLoggerByLevel('error'),
+    ];
+  }
 
+  static createLoggerByLevel(level) {
     return morgan((tokens, req, res) => {
-      const ip = tokens['remote-addr'](req, res);
-      const { pathname } = req._parsedUrl;
-
-      const info = {
-        date: moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-        method: tokens.method(req, res),
-        pathname,
-        status: parseInt(tokens.status(req, res), 10),
-        responseTime: tokens['response-time'](req, res),
-        client: {
-          locale: req.locale,
-          ipv4: ip === '::1' ? '127.0.0.1' : ip,
-          userAgent: tokens['user-agent'](req, res),
-        },
-      };
-
-      if (req.headers['content-type'] === 'application/json') {
-        if (!isEmpty(req.body)) {
-          info.body = LoggerConfig.replacePropertyValue(rules.keys, req.body);
-        }
-      }
-
-      if (!isEmpty(req.query)) {
-        info.query = LoggerConfig.replacePropertyValue(rules.keys, req.query);
-      }
-
-      if (req.params) {
-        const keys = Object.keys(req.params);
-        if (keys.length > 0) {
-          info.params = {};
-
-          for (let i = 0; i < keys.length; i += 1) {
-            if (keys[i] !== '0') {
-              info.params[keys[i]] = req.params[keys[i]];
-            }
-          }
-        }
-      }
-
-      return info;
+      return JSON.stringify(LoggerConfig.parseHTTP(tokens, req, res));
     }, {
-      stream,
-      skip: LoggerConfig.skip,
+      stream: winstonStream(winston, level),
+      skip: LoggerConfig[`${level}Skip`],
     });
   }
 
   // default skip '/', '/status' and '/favicon.ico'
   static loadSkipPaths() {
-    const paths = process.env.LOGGER_SKIP_PATHS || '';
-    const rows = `${paths}|/|/status|/favicon.ico`.split('|');
+    const paths = process.env.LOGGER_SKIP_PATHS || '/|/status|/favicon.ico';
+    const rows = paths.split('|');
     rules.paths = {};
 
     for (let i = 0; i < rows.length; i += 1) {
@@ -94,8 +62,8 @@ class LoggerConfig {
 
   // default skip OPTIONS and GET
   static loadSkipMethods() {
-    const methods = (process.env.LOGGER_SKIP_METHODS || 'GET').toUpperCase();
-    const rows = `${methods}|OPTIONS`.split('|');
+    const methods = (process.env.LOGGER_SKIP_METHODS || 'GET|OPTIONS').toUpperCase();
+    const rows = methods.split('|');
     rules.methods = {};
 
     for (let i = 0; i < rows.length; i += 1) {
@@ -106,8 +74,8 @@ class LoggerConfig {
   }
 
   static loadSkipKeys() {
-    const keys = process.env.LOGGER_SKIP_KEYS || '';
-    const rows = keys.split('|');
+    const keys = process.env.LOGGER_SKIP_KEYS || 'authorization';
+    const rows = keys.toLowerCase().split('|');
     rules.keys = {};
 
     for (let i = 0; i < rows.length; i += 1) {
@@ -133,17 +101,80 @@ class LoggerConfig {
   }
 
   static getTransports() {
-    const transports = [
-      new winston.transports.Console({
+    const transports = [];
+
+    if (process.env.LOGGER_STREAM_TYPE === 'console') {
+      const Transport = new winston.transports.Console({
         timestamp: () => {
           return moment.utc().format('YYYY-MM-DD HH:mm:ss');
         },
         json: false,
         colorize: true,
-      }),
-    ];
+      });
+
+      transports.push(Transport);
+    }
+
+    if (process.env.LOGGER_STREAM_TYPE === 'firehose') {
+      const Transport = new Firehose({
+        timestamp: () => {
+          return moment.utc().format('YYYY-MM-DD HH:mm:ss');
+        },
+        json: false,
+        colorize: true,
+        streamName: process.env.LOGGER_STREAM_NAME,
+        firehoseOptions: {
+          region: process.env.AWS_REGION,
+        },
+      });
+
+      transports.push(Transport);
+    }
 
     return transports;
+  }
+
+  static parseHTTP(tokens, req, res) {
+    const ip = tokens['remote-addr'](req, res);
+    const { pathname } = req._parsedUrl;
+
+    const info = {
+      date: moment.utc().format('YYYY-MM-DD HH:mm:ss'),
+      method: tokens.method(req, res),
+      pathname,
+      status: parseInt(tokens.status(req, res), 10),
+      responseTime: tokens['response-time'](req, res),
+      client: {
+        locale: req.locale,
+        ipv4: ip === '::1' ? '127.0.0.1' : ip,
+        userAgent: tokens['user-agent'](req, res),
+      },
+    };
+
+    if (req.headers['content-type'] === 'application/json') {
+      if (!isEmpty(req.body)) {
+        info.body = LoggerConfig.replacePropertyValue(rules.keys, req.body);
+      }
+    }
+
+    if (!isEmpty(req.query)) {
+      info.query = LoggerConfig.replacePropertyValue(rules.keys, req.query);
+    }
+
+    if (req.params) {
+      const keys = Object.keys(req.params);
+      if (keys.length > 0) {
+        info.params = {};
+
+        for (let i = 0; i < keys.length; i += 1) {
+          if (keys[i] !== '0') {
+            info.params[keys[i]] = req.params[keys[i]];
+          }
+        }
+      }
+    }
+
+    return info;
   }
 
   static getLevels() {
@@ -176,7 +207,7 @@ class LoggerConfig {
     const newObject = clone(object);
 
     each(object, (val, key) => {
-      if (keys.indexOf(key) !== -1) {
+      if (keys.indexOf(key.toLowerCase()) !== -1) {
         newObject[key] = '******';
       } else if (typeof (val) === 'object') {
         newObject[key] = LoggerConfig.replacePropertyValue(keys, val);
@@ -194,11 +225,13 @@ class LoggerConfig {
 
   static getLevelByStatusCode(code) {
     let level = 'info';
-    if (code >= 400) { level = 'warning'; }
+    if (code >= 400) { level = 'notice'; }
     if (code >= 500) { level = 'error'; }
-    if (code === 401 || code === 403) { level = 'crit'; }
+    if (code === 401 || code === 403) { level = 'warning'; }
     return level;
   }
+
+  /* Skips */
 
   static skip(req, res) {
     const { pathname } = req._parsedUrl;
@@ -218,6 +251,46 @@ class LoggerConfig {
     }
 
     return false;
+  }
+
+  static infoSkip(req, res) {
+    const { statusCode } = res;
+
+    if (statusCode !== 200) {
+      return true;
+    }
+
+    return LoggerConfig.skip(req, res);
+  }
+
+  static noticeSkip(req, res) {
+    const { statusCode } = res;
+
+    if ((statusCode < 400 || statusCode >= 500) || (statusCode === 401 || statusCode === 403)) {
+      return true;
+    }
+
+    return LoggerConfig.skip(req, res);
+  }
+
+  static errorSkip(req, res) {
+    const { statusCode } = res;
+
+    if (statusCode < 500) {
+      return true;
+    }
+
+    return LoggerConfig.skip(req, res);
+  }
+
+  static warningSkip(req, res) {
+    const { statusCode } = res;
+
+    if (statusCode === 401 || statusCode === 403) {
+      return LoggerConfig.skip(req, res);
+    }
+
+    return true;
   }
 }
 

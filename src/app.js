@@ -45,7 +45,7 @@ app.get(['/', '/status'], async (req, res) => {
 /* Instatiate routes */
 app.use('/user', userRoutes);
 
-app.get('/a/:merchantId', (req, res) => res.send({ a: 'a' }));
+app.get('/a/:merchantId', (req, res) => res.status(parseInt(req.query.status, 10)).send({ a: 'a' }));
 
 /* Log errors */
 app.use(error);
