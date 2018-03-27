@@ -1,35 +1,135 @@
 const winston = require('winston');
-const expressWinston = require('express-winston');
-const request = require('request');
-const debug = require('request-debug');
+const morgan = require('morgan');
 const moment = require('moment-timezone');
-const { clone, each } = require('lodash');
+const winstonStream = require('winston-stream');
+const { clone, each, isEmpty } = require('lodash');
 const Logger = require('../helpers/Logger');
-const Settings = require('./Settings');
 
-const instances = {
-  init: false,
-  expressRequest: false,
-  expressError: false,
+const rules = {
+  paths: {},
+  methods: {},
+  status: {},
 };
 
 class LoggerConfig {
-  static init() {
-    if (instances.init) {
-      throw Error('Logger: init already executed');
-    }
-
-    instances.init = true;
+  static winston() {
     winston.configure({
       exitOnError: false,
-      levels: this.getLevels(),
-      colors: this.getColors(),
-      transports: this.getTransports(),
+      levels: LoggerConfig.getLevels(),
+      colors: LoggerConfig.getColors(),
+      transports: LoggerConfig.getTransports(),
     });
+  }
 
-    debug(request, this.requestDebugFormatter);
-    expressWinston.requestWhitelist.push('body');
-    expressWinston.responseWhitelist.push('body');
+  static morgan() {
+    LoggerConfig.loadSkipPaths();
+    LoggerConfig.loadSkipMethods();
+    LoggerConfig.loadSkipStatus();
+    LoggerConfig.loadSkipKeys();
+
+    let stream = null;
+    switch (process.env.LOGGER_STREAM_TYPE) {
+      default: stream = winstonStream(winston, 'info');
+    }
+
+    return morgan((tokens, req, res) => {
+      const ip = tokens['remote-addr'](req, res);
+      const { pathname } = req._parsedUrl;
+
+      const info = {
+        date: moment.utc().format('YYYY-MM-DD HH:mm:ss'),
+        method: tokens.method(req, res),
+        pathname,
+        status: parseInt(tokens.status(req, res), 10),
+        responseTime: tokens['response-time'](req, res),
+        client: {
+          locale: req.locale,
+          ipv4: ip === '::1' ? '127.0.0.1' : ip,
+          userAgent: tokens['user-agent'](req, res),
+        },
+      };
+
+      if (req.headers['content-type'] === 'application/json') {
+        if (!isEmpty(req.body)) {
+          info.body = LoggerConfig.replacePropertyValue(rules.keys, req.body);
+        }
+      }
+
+      if (!isEmpty(req.query)) {
+        info.query = LoggerConfig.replacePropertyValue(rules.keys, req.query);
+      }
+
+      if (req.params) {
+        const keys = Object.keys(req.params);
+        if (keys.length > 0) {
+          info.params = {};
+
+          for (let i = 0; i < keys.length; i += 1) {
+            if (keys[i] !== '0') {
+              info.params[keys[i]] = req.params[keys[i]];
+            }
+          }
+        }
+      }
+
+      return info;
+    }, {
+      stream,
+      skip: LoggerConfig.skip,
+    });
+  }
+
+  // default skip '/', '/status' and '/favicon.ico'
+  static loadSkipPaths() {
+    const paths = process.env.LOGGER_SKIP_PATHS || '';
+    const rows = `${paths}|/|/status|/favicon.ico`.split('|');
+    rules.paths = {};
+
+    for (let i = 0; i < rows.length; i += 1) {
+      if (rows[i] !== '') {
+        rules.paths[rows[i]] = true;
+      }
+    }
+  }
+
+  // default skip OPTIONS and GET
+  static loadSkipMethods() {
+    const methods = (process.env.LOGGER_SKIP_METHODS || 'GET').toUpperCase();
+    const rows = `${methods}|OPTIONS`.split('|');
+    rules.methods = {};
+
+    for (let i = 0; i < rows.length; i += 1) {
+      if (rows[i] !== '') {
+        rules.methods[rows[i]] = true;
+      }
+    }
+  }
+
+  static loadSkipKeys() {
+    const keys = process.env.LOGGER_SKIP_KEYS || '';
+    const rows = keys.split('|');
+    rules.keys = {};
+
+    for (let i = 0; i < rows.length; i += 1) {
+      if (rows[i] !== '') {
+        rules.keys[rows[i]] = true;
+      }
+    }
+
+    rules.keys = Object.keys(rules.keys);
+  }
+
+  // default skip 404
+  static loadSkipStatus() {
+    const status = process.env.LOGGER_SKIP_STATUS || '404';
+    const rows = status.split('|');
+    rules.status = {};
+
+    for (let i = 0; i < rows.length; i += 1) {
+      if (rows[i] !== '') {
+        rules.status[rows[i]] = true;
+      }
+    }
   }
 
   static getTransports() {
@@ -42,7 +142,6 @@ class LoggerConfig {
         colorize: true,
       }),
     ];
-
 
     return transports;
   }
@@ -73,42 +172,6 @@ class LoggerConfig {
     };
   }
 
-  static requestDebugFormatter(type, data) {
-    let message = null;
-    let status = 0;
-
-    if (type === 'request') {
-      message = {
-        id: data.debugId,
-        type,
-        date: moment.utc().format('YYYY-MM-DD hh:mm:ss'),
-        url: data.uri,
-        method: data.method,
-        message: data.body,
-      };
-    } else if (type === 'response') {
-      status = data.statusCode;
-      message = {
-        id: data.debugId,
-        type,
-        date: moment.utc().format('YYYY-MM-DD hh:mm:ss'),
-        status,
-        message: data.body,
-      };
-    }
-
-    if (message) {
-      switch (LoggerConfig.getLevelByStatusCode(status)) {
-        case 'warning': Logger.warning(message); break;
-        case 'error': Logger.error(message); break;
-        case 'crit': Logger.crit(message); break;
-        default: Logger.info(message);
-      }
-    } else {
-      Logger.warning(type, data);
-    }
-  }
-
   static replacePropertyValue(keys, object) {
     const newObject = clone(object);
 
@@ -123,27 +186,10 @@ class LoggerConfig {
     return newObject;
   }
 
-  static expressRequest(app) {
-    if (instances.expressRequest) {
-      throw Error('Logger: expressRequest already executed');
-    }
-
-    instances.expressRequest = true;
-    app.use(expressWinston.logger(this.getLoggerOptions()));
-  }
-
-  static expressError(app) {
-    if (instances.expressError) {
-      throw Error('Logger: expressError already executed');
-    }
-
-    instances.expressError = true;
-    app.use(expressWinston.errorLogger(this.getLoggerOptions()));
-
-    app.use((err, req, res, next) => { // eslint-disable-line
-      res.status(err.status || 500);
-      res.send({ code: 0, message: 'Falha interna do servidor' });
-    });
+  static error(err, req, res, next) { // eslint-disable-line
+    Logger.error(err);
+    res.status(err.status || 500);
+    res.send({ code: 0, message: 'Falha interna do servidor' });
   }
 
   static getLevelByStatusCode(code) {
@@ -154,51 +200,24 @@ class LoggerConfig {
     return level;
   }
 
-  static getLoggerOptions() {
-    const requestFilterBlacklist = ['headers', 'httpVersion', 'originalUrl'];
-    const responseFilterBlacklist = [];
-    const bodyBlacklist = Settings.get('LOG_BODY_BLACKLIST') || [];
-    const ignoredRoutes = ['/', '/status', '/favicon.ico'];
+  static skip(req, res) {
+    const { pathname } = req._parsedUrl;
+    const { method } = req.method;
+    const status = String(res.statusCode);
 
-    return {
-      winstonInstance: winston,
-      meta: true,
-      msg: 'HTTP {{res.statusCode}} {{req.method}} {{req.url}}',
-      expressFormat: false,
-      colorStatus: true,
-      ignoredRoutes,
-      requestFilter: (req, propName) => {
-        if (requestFilterBlacklist.indexOf(propName) >= 0) {
-          return undefined;
-        }
-        return req[propName];
-      },
-      responseFilter: (res, propName) => {
-        if (responseFilterBlacklist.indexOf(propName) >= 0) {
-          return undefined;
-        }
+    if (rules.methods[method]) {
+      return true;
+    }
 
-        if (propName === 'body' && res[propName] && bodyBlacklist.length > 0) {
-          return LoggerConfig.replacePropertyValue(bodyBlacklist, res[propName]);
-        }
+    if (rules.paths[pathname]) {
+      return true;
+    }
 
-        return res[propName];
-      },
-      dynamicMeta: (req) => {
-        return {
-          session: req.session ? req.session.id : null,
-          user: req.session ? req.session.user.id : null,
-        };
-      },
-      skip: (req) => {
-        const method = req.method.toUpperCase();
-        if (method === 'GET' || method === 'OPTIONS') {
-          return true;
-        }
+    if (rules.status[status]) {
+      return true;
+    }
 
-        return false;
-      },
-    };
+    return false;
   }
 }
 

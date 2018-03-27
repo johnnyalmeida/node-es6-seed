@@ -29,30 +29,32 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "compression": "^1.7.1",
+    "compression": "^1.7.2",
     "cors": "^2.8.4",
     "cron": "^1.3.0",
     "debug": "^3.1.0",
     "dotenv": "^4.0.0",
-    "express": "^4.16.2",
-    "express-winston": "^2.4.0",
-    "helmet": "^3.9.0",
+    "express": "^4.16.3",
+    "express-winston": "^2.5.0",
+    "helmet": "^3.12.0",
     "i18n": "^0.8.3",
-    "joi": "^13.1.0",
-    "knex": "^0.14.2",
-    "lodash": "^4.17.4",
+    "joi": "^13.1.2",
+    "knex": "^0.14.4",
+    "lodash": "^4.17.5",
     "moment-timezone": "^0.5.14",
-    "mysql2": "^1.5.1",
-    "request": "^2.83.0",
+    "morgan": "^1.9.0",
+    "mysql2": "^1.5.3",
+    "request": "^2.85.0",
     "request-debug": "^0.2.0",
-    "winston": "^2.4.0"
+    "winston": "^2.4.1",
+    "winston-stream": "0.0.0"
   },
   "devDependencies": {
     "ava": "^0.22.0",
     "coveralls": "^3.0.0",
-    "eslint": "^4.14.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.0.2",
-    "eslint-plugin-import": "^2.8.0",
-    "nyc": "^11.2.1"
+    "eslint-plugin-import": "^2.9.0",
+    "nyc": "^11.6.0"
   }
 }

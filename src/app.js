@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const i18n = require('./config/i18n');
 const { knex } = require('./config/db');
+const { morgan, winston, error } = require('./config/LoggerConfig');
 const Settings = require('./config/Settings');
 const Logger = require('./helpers/Logger');
 
@@ -19,20 +20,16 @@ const userRoutes = require('./routes/user');
 /* Express initialization */
 const app = express();
 
-/* Logger */
-const LoggerConfig = require('./config/LoggerConfig');
 
 /* Express utilites */
 app.use(helmet());
 app.use(cors());
+app.use(morgan());
 app.use(compression());
 app.use(i18n.init);
 app.use(bodyParser.json({
   limit: process.env.BODY_LIMIT,
 }));
-
-/* Log express request and response */
-LoggerConfig.expressRequest(app);
 
 /* Status endpoint */
 app.get(['/', '/status'], async (req, res) => {
@@ -48,8 +45,10 @@ app.get(['/', '/status'], async (req, res) => {
 /* Instatiate routes */
 app.use('/user', userRoutes);
 
+app.get('/a/:merchantId', (req, res) => res.send({ a: 'a' }));
+
 /* Log errors */
-LoggerConfig.expressError(app);
+app.use(error);
 
 app.all('*', (req, res) => {
   res.status(404).send({ success: false, code: '404' });
@@ -57,8 +56,9 @@ app.all('*', (req, res) => {
 
 debug('load settings');
 (async () => {
-  await Settings.load();
-  await LoggerConfig.init();
+  winston();
+  // await Settings.load();
+  // await LoggerConfig.init();
 
   debug('Starting server');
   app.listen(process.env.PORT, () => {
