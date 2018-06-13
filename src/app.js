@@ -1,26 +1,30 @@
-/* .env lib */
-require('dotenv').config();
-const debug = require('debug')('app');
-
+/* Debug module init */
+import debugModule from 'debug';
 /* Dependencies */
-const express = require('express');
-const helmet = require('helmet');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const compression = require('compression');
-const i18n = require('./config/i18n');
-const { knex } = require('./config/db');
-const Settings = require('./config/Settings');
-const Logger = require('./helpers/Logger');
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import compression from 'compression';
+import config from './config/config';
+import i18n from './config/i18n';
+import knex from './config/db';
+import Settings from './config/Settings';
+import Logger from './helpers/Logger';
 
 /* Routes */
-const userRoutes = require('./routes/user');
+import userRoutes from './routes/user';
+
+/* Logger */
+import LoggerConfig from './config/LoggerConfig';
+
+/* Init debug */
+const debug = debugModule('app');
 
 /* Express initialization */
 const app = express();
 
-/* Logger */
-const LoggerConfig = require('./config/LoggerConfig');
+app.config = config;
 
 /* Express utilites */
 app.use(helmet());

@@ -1,6 +1,6 @@
-const express = require('express');
-const UserController = require('../controllers/UserController');
-const UserSchema = require('../routes/schemas/UserSchema');
+import express from 'express';
+import UserController from '../controllers/UserController';
+import UserSchema from '../routes/schemas/UserSchema';
 
 const router = express.Router({ mergeParams: true });
 
@@ -19,4 +19,4 @@ router.put('/:userId', UserSchema.put, UserController.put);
 /* DELETE /user/:userId */
 router.delete('/:userId', UserSchema.delete, UserController.delete);
 
-module.exports = router;
+export default router;

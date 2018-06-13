@@ -1,9 +1,11 @@
-const { CronJob } = require('cron');
+import cron from 'cron';
 
 const workers = {};
 
 class Cron {
   static add(id, timer, worker) {
+    const key = id.toLowerCase();
+
     if (typeof key !== 'string') {
       throw new Error('Cron: key must be a string');
     }
@@ -16,24 +18,23 @@ class Cron {
       throw new Error('Cron: worker must be a string');
     }
 
-    const key = id.toLowerCase();
     if (workers[key] !== undefined) {
       throw new Error('Cron: key must be a unique');
     }
 
-    workers.push(new CronJob(timer, worker, null, false, 'Etc/UTC'));
+    workers.push(new cron.CronJob(timer, worker, null, false, 'Etc/UTC'));
 
     return Cron.get(key);
   }
 
   static get(id) {
+    const key = id.toLowerCase();
     if (typeof key !== 'string') {
       throw new Error('Cron: key must be a string');
     }
 
-    const key = id.toLowerCase();
-    if (worker[key]) {
-      return worker[key];
+    if (workers[key]) {
+      return workers[key];
     }
 
     return null;

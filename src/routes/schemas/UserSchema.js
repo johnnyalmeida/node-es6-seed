@@ -1,8 +1,7 @@
-const Joi = require('joi');
-const RouteValidator = require('../../middlewares/RouteValidator');
+import Joi from 'joi';
+import RouteValidator from '../../middlewares/RouteValidator';
 
 class UserSchema extends RouteValidator {
-
   static get get() {
     const schema = {
       params: Joi.object().keys({
@@ -54,4 +53,4 @@ class UserSchema extends RouteValidator {
 
 }
 
-module.exports = UserSchema;
+export default UserSchema;

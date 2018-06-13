@@ -1,16 +1,19 @@
-let config = null;
+import knex from 'knex';
+import config from './config';
+
+let db = null;
 
 if (typeof global.database === 'object') {
-  config = global.database;
+  db = global.database;
 } else {
-  config = {
+  db = {
     client: 'mysql2',
     debug: false,
     connection: {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
+      host: config.db.host,
+      user: config.db.user,
+      password: config.db.pass,
+      database: config.db.database,
       supportBigNumbers: true,
       bigNumberStrings: true,
       multipleStatements: true,
@@ -18,16 +21,16 @@ if (typeof global.database === 'object') {
       dateStrings: true,
     },
     pool: {
-      min: parseInt(process.env.DB_POOL_MIN || 0, 10),
-      max: parseInt(process.env.DB_POOL_MAX || 1, 10),
+      min: parseInt(config.db.pool_min || 0, 10),
+      max: parseInt(config.db.pool_max || 1, 10),
     },
   };
 }
 
 // main connections
-const main = require('knex')(config);
+const main = knex(db);
 
-module.exports = {
+export default {
   knex: main,
   raw: main.raw, // alias to knex.raw
 };

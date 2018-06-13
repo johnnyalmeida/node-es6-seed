@@ -1,13 +1,12 @@
-const { knex } = require('../config/db');
-const UserModel = require('../models/UserModel');
-const { toUnixEpoch } = require('../helpers/Datetime');
+import knex from '../config/db';
+import UserModel from '../models/UserModel';
+import toUnixEpoch from '../helpers/Datetime';
 
 class UserService {
-
   static async list() {
     const list = await UserModel.list();
 
-    const result = list.map(user => ({
+    list.map(user => ({
       id: user.id,
       name: user.name,
       status: user.status,
@@ -56,7 +55,7 @@ class UserService {
     });
   }
 
-  static delete(data) {
+  static delete(userId, data) {
     return knex.transaction(async (trx) => {
       const user = await UserModel.get(userId)
         .transacting(trx);
@@ -73,4 +72,4 @@ class UserService {
   }
 }
 
-module.exports = UserService;
+export default UserService;

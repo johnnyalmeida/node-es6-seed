@@ -1,4 +1,6 @@
-const { knex } = require('../config/db');
+import db from '../config/db';
+
+const { knex } = db;
 
 // Store settings data
 const data = {};
@@ -32,4 +34,4 @@ class Settings {
   }
 }
 
-module.exports = Settings;
+export default Settings;

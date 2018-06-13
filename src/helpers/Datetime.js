@@ -1,4 +1,4 @@
-const moment = require('moment-timezone');
+import moment from 'moment-timezone';
 
 class Datetime {
   static toUnixEpoch(dateString) {
@@ -6,4 +6,4 @@ class Datetime {
   }
 }
 
-module.exports = Datetime;
+export default Datetime;

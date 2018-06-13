@@ -48,3 +48,6 @@ jspm_packages
 
 # Local Env Variables
 .env
+
+# Compiled files
+dist

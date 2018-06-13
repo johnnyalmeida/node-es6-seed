@@ -1,5 +1,5 @@
-const i18n = require('i18n');
-const { join } = require('path');
+import i18n from 'i18n';
+import path from 'path';
 
 /* i18n */
 i18n.configure({
@@ -12,8 +12,8 @@ i18n.configure({
     en: 'en-US',
   },
   defaultLocale: 'pt-BR',
-  directory: join(__dirname, '..', 'locales'),
+  directory: path.join(__dirname, '..', 'locales'),
   register: global,
 });
 
-module.exports = i18n;
+export default i18n;

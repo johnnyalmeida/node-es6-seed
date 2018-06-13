@@ -1,7 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 class RouteValidator {
-
   static validate(schema) {
     return this._validate.bind(schema);
   }
@@ -30,4 +29,4 @@ class RouteValidator {
   }
 }
 
-module.exports = RouteValidator;
+export default RouteValidator;

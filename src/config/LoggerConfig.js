@@ -1,11 +1,11 @@
-const winston = require('winston');
-const expressWinston = require('express-winston');
-const request = require('request');
-const debug = require('request-debug');
-const moment = require('moment-timezone');
-const { clone, each } = require('lodash');
-const Logger = require('../helpers/Logger');
-const Settings = require('./Settings');
+import winston from 'winston';
+import expressWinston from 'express-winston';
+import request from 'request';
+import debug from 'request-debug';
+import moment from 'moment-timezone';
+import { clone, each } from 'lodash';
+import Logger from '../helpers/Logger';
+import Settings from './Settings';
 
 const instances = {
   init: false,
@@ -202,4 +202,4 @@ class LoggerConfig {
   }
 }
 
-module.exports = LoggerConfig;
+export default LoggerConfig;

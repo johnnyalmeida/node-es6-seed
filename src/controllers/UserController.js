@@ -1,8 +1,7 @@
-const Logger = require('../helpers/Logger');
-const UserService = require('../services/UserService');
+import Logger from '../helpers/Logger';
+import UserService from '../services/UserService';
 
 class UserController {
-
   static async list(req, res) {
     try {
       const rows = await UserService.list();
@@ -40,7 +39,6 @@ class UserController {
     try {
       const [id] = await UserService.post(data);
       res.send({ success: true, data: { id } });
-
     } catch (err) {
       Logger.throw(res, '2365958507', err);
     }
@@ -94,4 +92,4 @@ class UserController {
   }
 }
 
-module.exports = UserController;
+export default UserController;

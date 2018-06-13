@@ -1,17 +1,20 @@
 /* .env lib */
-require('dotenv').config();
-const debug = require('debug')('worker');
+import dotenv from 'dotenv';
+import debugModule from 'debug';
 
 /* Dependencies */
-require('./config/i18n');
-const Cron = require('./helpers/Cron');
+import Cron from './helpers/Cron';
 
 /* Logger */
-const LoggerConfig = require('./config/LoggerConfig');
-const Logger = require('./helpers/Logger');
+import LoggerConfig from './config/LoggerConfig';
+import Settings from './config/Settings';
 
 /* Crons */
-const EverySecond = require('./crons/EverySecond.js');
+import EverySecond from './crons/EverySecond';
+
+/* Init config */
+dotenv.config();
+const debug = debugModule('worker');
 
 /* Services */
 const services = [];
