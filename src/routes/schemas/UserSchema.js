@@ -50,7 +50,6 @@ class UserSchema extends RouteValidator {
 
     return this.validate(schema);
   }
-
 }
 
 export default UserSchema;
